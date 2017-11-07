@@ -3,7 +3,7 @@ package lexer
 import (
 	"goblin/token"
 
-	"fmt"
+	"errors"
 )
 
 //Lexer
@@ -31,12 +31,38 @@ func (l *Lexer) readRune() {
 	l.readPosition += 1
 }
 
-func (l *Lexer) readIdentifier() string {
+func (l *Lexer) peekRune() rune {
+	if l.readPosition >= len(l.input) {
+		return 0
+	} else {
+		return l.input[l.readPosition]
+	}
+}
+
+
+func (l *Lexer) readStringToken() (string, error) {
 	position := l.position
-	for isLetter(l.ch) {
+	var lastRune rune
+	//is the first rune?
+	afterFirst := false
+
+	//string tokens (like identifiers and keywords) must start with letters
+	for isLetter(l.ch) || afterFirst && isDigit(l.ch) || afterFirst && l.ch == '.'{
+		if (!afterFirst) {
+			afterFirst = true;
+		}
+		lastRune = l.ch
 		l.readRune()
 	}
-	return string(l.input[position:l.position])
+
+	//strings token can't end with .
+
+	var err error
+	if lastRune == '.' {
+		err = errors.New("string token can't terminate with a dot.")
+	}
+
+	return string(l.input[position:l.position]), err
 }
 
 func (l *Lexer) readNumber() (token.TokenType, string) {
@@ -46,7 +72,6 @@ func (l *Lexer) readNumber() (token.TokenType, string) {
 	for l.ch == '.' || isDigit(l.ch)    {
 		if l.ch == '.' {
 			isFloat = true
-			fmt.Println("FLoat found")
 		}
 		l.readRune()
 	}
@@ -66,39 +91,65 @@ func (l *Lexer) NextToken() token.Token {
 
 	switch l.ch {
 	case '=':
-		tok = token.NewToken(token.ASSIGN, l.ch)
+		if l.peekRune() == '=' {
+			ch := l.ch
+			l.readRune()
+			literal := string(ch) + string(l.ch)
+			tok = token.Token{token.EQUAL, literal}
+		} else {
+			tok = token.Token{token.ASSIGN, string(l.ch)}
+		}
+
+	case '!':
+		if l.peekRune() == '=' {
+			ch := l.ch
+			l.readRune()
+			literal := string(ch) + string(l.ch)
+			tok = token.Token{token.NOT, literal}
+		} else {
+			tok = token.Token{token.NOTEQUAL, string(l.ch)}
+		}
+
 	case ';':
-		tok = token.NewToken(token.SEMICOLON, l.ch)
+		tok = token.Token{token.SEMICOLON, string(l.ch)}
 	case '(':
-		tok = token.NewToken(token.LPAREN, l.ch)
+		tok = token.Token{token.LPAREN, string(l.ch)}
 	case ')':
-		tok = token.NewToken(token.RPAREN, l.ch)
+		tok = token.Token{token.RPAREN, string(l.ch)}
 	case ',':
-		tok = token.NewToken(token.COMMA, l.ch)
+		tok = token.Token{token.COMMA, string(l.ch)}
 	case '+':
-		tok = token.NewToken(token.PLUS, l.ch)
+		tok = token.Token{token.PLUS, string(l.ch)}
 	case '{':
-		tok = token.NewToken(token.LBRACE, l.ch)
+		tok = token.Token{token.LBRACE, string(l.ch)}
 	case '}':
-		tok = token.NewToken(token.RBRACE, l.ch)
+		tok = token.Token{token.RBRACE, string(l.ch)}
 	case 0:
-		tok.Literal = ""
-		tok.Type = token.EOF
+		tok = token.Token{ token.EOF, ""}
+
 	default:
 
 		// if the token starts with a letter
 		if isLetter(l.ch) {
-			var isType = false;
-			tok.Literal = l.readIdentifier()
 
+			//Build the token literal
+			literal, err := l.readStringToken()
+			if err != nil {
+				return token.Token{token.ILLEGAL, literal}
+			}
+
+			//now we have to choose the token tyoe
 			//it can be a type name
-			tok.Type, isType = token.LookupType(tok.Literal)
+			tokenType, err := token.LookupType(literal)
 
 			//or as a last option an identifier
-			if !isType {
-				tok.Type = token.LookupIdent(tok.Literal)
+			if err != nil {
+				tokenType = token.IDENT
 			}
-			return tok
+
+			//finally return the token
+			return token.Token{tokenType, literal}
+
 		} else if isDigit(l.ch) {
 			// it could be a number
 
@@ -106,9 +157,10 @@ func (l *Lexer) NextToken() token.Token {
 			tok.Type = t
 			tok.Literal = l
 			return tok
-		} else {
-			tok = token.NewToken(token.ILLEGAL, l.ch)
 		}
+
+		tok = token.Token{token.ILLEGAL, string(l.ch)}
+
 	}
 
 	l.readRune()

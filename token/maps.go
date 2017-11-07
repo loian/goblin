@@ -1,31 +1,90 @@
 package token
 
+import "errors"
+
 var keywords = map[string]TokenType{
-	"fn":  FUNCTION,
-	"let": LET,
-	"var": VAR,
+	"else":   ELSE,
+	"false":  FALSE,
+	"fn":     FUNCTION,
+	"if":     IF,
+	"let":    LET,
+	"return": RETURN,
+	"true":   TRUE,
+	"var":    VAR,
 }
 
-var typenames = map[string]TokenType {
-	"int": TYPENAME,
-	"string": TYPENAME,
-	"float": TYPENAME,
+var typenames = map[string]TokenType{
+	"bool":    TYPENAME,
+	"int":     TYPENAME,
+	"uint":    TYPENAME,
+	"bigint":  TYPENAME,
+	"ubigint": TYPENAME,
+	"string":  TYPENAME,
+	"float":   TYPENAME,
 	"decimal": TYPENAME,
 }
 
-func LookupType(t string) (TokenType, bool) {
-	if tok, ok := typenames[t]; ok {
-		return tok, true
-	}
-	return ILLEGAL, false
+var tokenNames = map[TokenType]string{
+	ILLEGAL:        "ILLEGAL",
+	EOF:            "EOF",
+	IDENT:          "IDENT",
+	TYPENAME:       "TYPENAME",
+	BOOL:           "BOOL",
+	INT:            "INT",
+	FLOAT:          "FLOAT",
+	DECIMAL:        "DECIMAL",
+	STRING:         "STRING",
+	ASSIGN:         "ASSIGN",
+	ASSIGNPLUS:     "ASSIGNPLUS",
+	ASSINGMINUS:    "ASSINGMINUS",
+	ASSIGNMULTIPLY: "ASSIGNMULTIPLY",
+	ASSIGNDIVIDE:   "ASSIGNDIVIDE",
+	PLUS:           "PLUS",
+	MINUS:          "MINUS",
+	MULTIPLY:       "MULTIPLY",
+	DIVIDE:         "DIVIDE",
+	MODULE:         "MODULE",
+	GREATER:        "GREATER",
+	GREATEREQUAL:   "GREATEREQUAL",
+	LESSER:         "LESSER",
+	LESSEREQUAL:    "LESSEREQUAL",
+	NOT:            "NOT",
+	EQUAL:          "EQUAL",
+	NOTEQUAL:       "NOTEQUAL",
+	COMMA:          "COMMA",
+	SEMICOLON:      "SEMICOLON",
+	LPAREN:         "LPAREN",
+	RPAREN:         "RPAREN",
+	LBRACE:         "LBRACE",
+	RBRACE:         "RBRACE",
+	LBRACKET:       "LBRACKET",
+	RBRACKET:       "RBRACKET",
+	ELSE:           "ELSE",
+	FALSE:          "FALSE",
+	FUNCTION:       "FUNCTION",
+	IF:             "IF",
+	LET:            "LET",
+	RETURN:         "RETURN",
+	TRUE:           "TRUE",
+	VAR:            "VAR",
 }
 
-
-
-func LookupIdent(ident string) TokenType {
-	if tok, ok := keywords[ident]; ok {
-		return tok
+func LookupName(tokenType TokenType) string {
+	if name, ok := tokenNames[tokenType]; ok {
+		return name
 	}
-	return IDENT
+	return "uknown"
 }
 
+func LookupType(t string) (TokenType, error) {
+
+	if tokenType, ok := keywords[t]; ok {
+		return tokenType, nil
+	}
+
+	if tokenType, ok := typenames[t]; ok {
+		return tokenType, nil
+	}
+
+	return 0, errors.New("token lookup produces no results")
+}

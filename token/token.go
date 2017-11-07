@@ -6,13 +6,14 @@ const (
 )
 
 const (
-	// Identifiers + literals
+	// Identifiers + reserved
 	IDENT = iota + 100
+	TYPENAME
 )
 
 const(
 	//BASIC TYPES
-	TYPENAME = iota + 200
+	BOOL  = iota + 200
 	INT
 	FLOAT
 	DECIMAL
@@ -39,6 +40,9 @@ const (
 	GREATEREQUAL
 	LESSER
 	LESSEREQUAL
+	NOT
+	EQUAL
+	NOTEQUAL
 )
 
 const (
@@ -55,9 +59,12 @@ const (
 
 const (
 	// Keywords
-	FALSE    = iota + 600
+	ELSE     = iota + 600
+	FALSE
 	FUNCTION
+	IF
 	LET
+	RETURN
 	TRUE
 	VAR
 
@@ -72,6 +79,3 @@ type Token struct {
 	Literal string
 }
 
-func NewToken(tokenType TokenType, rn rune) Token {
-	return Token{Type: tokenType, Literal: string(rn)}
-}
