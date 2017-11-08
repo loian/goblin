@@ -66,19 +66,19 @@ func (l *Lexer) readStringToken() (string, error) {
 }
 
 func (l *Lexer) readNumber() (token.TokenType, string) {
-	isFloat := false
+	isDecimal := false
 	position := l.position
 
 	for l.ch == '.' || isDigit(l.ch)    {
 		if l.ch == '.' {
-			isFloat = true
+			isDecimal = true
 		}
 		l.readRune()
 	}
 
 	numberType := token.TokenType(token.INT);
-	if isFloat == true {
-		numberType = token.TokenType(token.FLOAT)
+	if isDecimal == true {
+		numberType = token.TokenType(token.DECIMAL)
 	}
 	return numberType, string(l.input[position:l.position])
 }
@@ -105,9 +105,9 @@ func (l *Lexer) NextToken() token.Token {
 			ch := l.ch
 			l.readRune()
 			literal := string(ch) + string(l.ch)
-			tok = token.Token{token.NOT, literal}
+			tok = token.Token{token.NOTEQUAL, literal}
 		} else {
-			tok = token.Token{token.NOTEQUAL, string(l.ch)}
+			tok = token.Token{token.NOT, string(l.ch)}
 		}
 
 	case ';':
@@ -120,6 +120,8 @@ func (l *Lexer) NextToken() token.Token {
 		tok = token.Token{token.COMMA, string(l.ch)}
 	case '+':
 		tok = token.Token{token.PLUS, string(l.ch)}
+	case '-':
+		tok = token.Token{token.MINUS, string(l.ch)}
 	case '{':
 		tok = token.Token{token.LBRACE, string(l.ch)}
 	case '}':

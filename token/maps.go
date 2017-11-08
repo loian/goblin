@@ -16,9 +16,6 @@ var keywords = map[string]TokenType{
 var typenames = map[string]TokenType{
 	"bool":    TYPENAME,
 	"int":     TYPENAME,
-	"uint":    TYPENAME,
-	"bigint":  TYPENAME,
-	"ubigint": TYPENAME,
 	"string":  TYPENAME,
 	"float":   TYPENAME,
 	"decimal": TYPENAME,
@@ -31,7 +28,6 @@ var tokenNames = map[TokenType]string{
 	TYPENAME:       "TYPENAME",
 	BOOL:           "BOOL",
 	INT:            "INT",
-	FLOAT:          "FLOAT",
 	DECIMAL:        "DECIMAL",
 	STRING:         "STRING",
 	ASSIGN:         "ASSIGN",
@@ -67,13 +63,14 @@ var tokenNames = map[TokenType]string{
 	RETURN:         "RETURN",
 	TRUE:           "TRUE",
 	VAR:            "VAR",
+	CONST:          "CONST",
 }
 
 func LookupName(tokenType TokenType) string {
 	if name, ok := tokenNames[tokenType]; ok {
 		return name
 	}
-	return "uknown"
+	return "unknown"
 }
 
 func LookupType(t string) (TokenType, error) {

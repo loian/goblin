@@ -19,12 +19,11 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 
 	//if the next token is an ident or a basic type name, assign the type to the statement
 	if p.peekToken.Type == token.IDENT || p.peekToken.Type == token.TYPENAME {
-		t, err := tables.LookupType(p.peekToken.Literal)
+		t, err := tables.LookupTypeCode(p.peekToken.Literal)
 
 		if err != nil {
-			//but if the literal is not a basic type or a user defined type, well that's an error
-			p.typeError(p.peekToken.Literal)
-			return nil
+			//store the type literal to late-resolving it
+			tables.LateResolveType(p.peekToken.Literal)
 		}
 
 		//The given identifier points to a type, so we can declare the let as accepting only that specific type

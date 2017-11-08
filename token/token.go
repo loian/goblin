@@ -15,7 +15,6 @@ const(
 	//BASIC TYPES
 	BOOL  = iota + 200
 	INT
-	FLOAT
 	DECIMAL
 	STRING
 )
@@ -59,7 +58,8 @@ const (
 
 const (
 	// Keywords
-	ELSE     = iota + 600
+	CONST     = iota + 600
+	ELSE
 	FALSE
 	FUNCTION
 	IF

@@ -10,7 +10,7 @@ import (
 func TestLetStatements(t *testing.T) {
 	input := `
 let x int = 5;
-let y bigint = 10;
+let y string = 10;
 let foobar = 838383;
 `
 
