@@ -1,5 +1,5 @@
 # goblin
-
+```
 import * from package
 import join from sql
 
@@ -47,3 +47,4 @@ interface Charlie {
 
 let x = Mock(Jack);
 x.attach('kessler', fn() int,int  {});
+```
