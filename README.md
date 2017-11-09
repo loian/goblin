@@ -27,10 +27,14 @@ fn (stringArr []string) int, string {
 	return 3, 'a'
 }
 
+//launch concurrent procedures
+defer a,b = parallel (
+	fn () int, string {
+		return 3, 'ping';
+	}
+);
 
-a = thread.start(function() {
-
-});
+capture a,b;
 
 
 class Jack extends Caramella {
