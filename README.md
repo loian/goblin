@@ -18,7 +18,7 @@ let a int = 3
 
 let a = 3, b=a*2, c float = a;
 
-fn (stringArr []string) int, string {
+fn gecko (stringArr []string) int, string {
 
 	for (let x = 0; x<10; x++) {
 		////
@@ -27,12 +27,13 @@ fn (stringArr []string) int, string {
 	return 3, 'a'
 }
 
-//launch concurrent procedures
-defer a,b = parallel (
-	fn () int, string {
+//launch concurrent procedures and defer the assignment to the capture statement
+defer a,b = parallel fn () int, string {
 		return 3, 'ping';
-	}
-);
+	}();
+
+//fire and forget
+parallel gecko(...)
 
 //pause the current one waiting for a and b
 capture a,b;
