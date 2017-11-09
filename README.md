@@ -34,6 +34,7 @@ defer a,b = parallel (
 	}
 );
 
+//pause the current one waiting for a and b
 capture a,b;
 
 
