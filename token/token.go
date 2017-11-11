@@ -17,6 +17,8 @@ const(
 	INT
 	DECIMAL
 	STRING
+	NULL
+	ALL
 )
 
 const(

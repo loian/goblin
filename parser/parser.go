@@ -52,11 +52,13 @@ func New(l *lexer.Lexer) *Parser {
 	//Register parser prefix functions
 	p.prefixParseFns = make(map[token.TokenType]prefixParseFn)
 	p.registerPrefix(token.IDENT, p.parseIdentifier)
+	p.registerPrefix(token.TRUE, p.parseBooleanLiteral)
+	p.registerPrefix(token.FALSE, p.parseBooleanLiteral)
+
 	p.registerPrefix(token.INT, p.parseIntegerLiteral)
 	p.registerPrefix(token.DECIMAL, p.parseDecimalLiteral)
 	p.registerPrefix(token.NOT, p.parseNotPrefixExpression)
 	p.registerPrefix(token.MINUS, p.parseMinusPrefixExpression)
-
 	p.infixParseFns = make(map[token.TokenType]infixParseFn)
 	p.registerInfix(token.PLUS, p.parsePlusEqNoteqGtLsGeLeInfixExpression)
 	p.registerInfix(token.MINUS, p.parseMinDivMulInfixExpression)
@@ -68,6 +70,8 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.GREATER, p.parsePlusEqNoteqGtLsGeLeInfixExpression)
 	p.registerInfix(token.LESSEREQUAL, p.parsePlusEqNoteqGtLsGeLeInfixExpression)
 	p.registerInfix(token.LESSER, p.parsePlusEqNoteqGtLsGeLeInfixExpression)
+
+	p.registerPrefix(token.LPAREN, p.parseGroupedExpression)
 
 	// Read two tokens, so curToken and peekToken are both set
 	p.nextToken()
@@ -214,6 +218,12 @@ func (p *Parser) parseIdentifier() ast.Expression {
 	return &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
 }
 
+//Boolean parsing
+func (p *Parser) parseBooleanLiteral() ast.Expression {
+	return &ast.BooleanLiteral{Token: p.curToken, Value: p.curTokenIs(token.TRUE)}
+}
+
+
 //parseIntegerLiteral, try to parse an int literal or it record
 func (p *Parser) parseIntegerLiteral() ast.Expression {
 	lit := &ast.IntegerLiteral{Token: p.curToken}
@@ -290,7 +300,6 @@ func (p *Parser) parseMinusPrefixExpression() ast.Expression {
 
 	//Compares the type of the right expression (the one following the current parsed token)
 	//with the accepted type of the current expression (a !)
-	fmt.Println(expression.Right.String())
 	//if !p.checkTypeCompatibility(expression.GetTypes(), expression.Right.GetTypes()) {
 	//	p.dataTypeError(expression.Right.GetTypes()[0])
 	//}
@@ -357,4 +366,16 @@ func (p *Parser) parseMinDivMulInfixExpression(left ast.Expression) ast.Expressi
 
 	return expression
 
+}
+
+func (p *Parser) parseGroupedExpression() ast.Expression {
+	p.nextToken()
+
+	exp := p.parseExpression(LOWEST)
+
+	if !p.expectPeek(token.RPAREN) {
+		return nil
+	}
+
+	return exp
 }

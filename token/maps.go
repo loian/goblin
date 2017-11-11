@@ -30,6 +30,9 @@ var tokenNames = map[TokenType]string{
 	INT:            "INT",
 	DECIMAL:        "DECIMAL",
 	STRING:         "STRING",
+	NULL:           "NULL",
+	ALL:            "ALL",
+
 	ASSIGN:         "ASSIGN",
 	ASSIGNPLUS:     "ASSIGNPLUS",
 	ASSINGMINUS:    "ASSINGMINUS",
