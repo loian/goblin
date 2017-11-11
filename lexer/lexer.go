@@ -122,6 +122,28 @@ func (l *Lexer) NextToken() token.Token {
 		tok = token.Token{token.PLUS, string(l.ch)}
 	case '-':
 		tok = token.Token{token.MINUS, string(l.ch)}
+	case '*':
+		tok = token.Token{token.MULTIPLY, string(l.ch)}
+	case '/':
+		tok = token.Token{token.DIVIDE, string(l.ch)}
+	case '>':
+		if l.peekRune() == '=' {
+			ch := l.ch
+			l.readRune()
+			literal := string(ch) + string(l.ch)
+			tok = token.Token{token.GREATEREQUAL, literal}
+		} else {
+			tok = token.Token{token.GREATER, string(l.ch)}
+		}
+	case '<':
+		if l.peekRune() == '=' {
+			ch := l.ch
+			l.readRune()
+			literal := string(ch) + string(l.ch)
+			tok = token.Token{token.LESSEREQUAL, literal}
+		} else {
+			tok = token.Token{token.LESSER, string(l.ch)}
+		}
 	case '{':
 		tok = token.Token{token.LBRACE, string(l.ch)}
 	case '}':
