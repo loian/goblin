@@ -6,7 +6,6 @@ import (
 	"goblin/token"
 )
 
-
 func TestString(t *testing.T) {
 	program := &Program{
 		Statements: []Statement{
@@ -28,4 +27,3 @@ func TestString(t *testing.T) {
 		t.Errorf("program.String() wrong. got=%q", program.String())
 	}
 }
-

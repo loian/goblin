@@ -8,10 +8,10 @@ import (
 
 //Lexer
 type Lexer struct {
-	input []rune
-	position int
+	input        []rune
+	position     int
 	readPosition int
-	ch rune
+	ch           rune
 }
 
 //New returns a new Lexer pointer
@@ -39,7 +39,6 @@ func (l *Lexer) peekRune() rune {
 	}
 }
 
-
 func (l *Lexer) readStringToken() (string, error) {
 	position := l.position
 	var lastRune rune
@@ -47,9 +46,9 @@ func (l *Lexer) readStringToken() (string, error) {
 	afterFirst := false
 
 	//string tokens (like identifiers and keywords) must start with letters
-	for isLetter(l.ch) || afterFirst && isDigit(l.ch) || afterFirst && l.ch == '.'{
-		if (!afterFirst) {
-			afterFirst = true;
+	for isLetter(l.ch) || afterFirst && isDigit(l.ch) || afterFirst && l.ch == '.' {
+		if !afterFirst {
+			afterFirst = true
 		}
 		lastRune = l.ch
 		l.readRune()
@@ -69,25 +68,24 @@ func (l *Lexer) readNumber() (token.TokenType, string) {
 	isDecimal := false
 	position := l.position
 
-	for l.ch == '.' || isDigit(l.ch)    {
+	for l.ch == '.' || isDigit(l.ch) {
 		if l.ch == '.' {
 			isDecimal = true
 		}
 		l.readRune()
 	}
 
-	numberType := token.TokenType(token.INT);
+	numberType := token.TokenType(token.INT)
 	if isDecimal == true {
 		numberType = token.TokenType(token.DECIMAL)
 	}
 	return numberType, string(l.input[position:l.position])
 }
 
-
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
 
-	l.skipWhitespace();
+	l.skipWhitespace()
 
 	switch l.ch {
 	case '=':
@@ -149,7 +147,7 @@ func (l *Lexer) NextToken() token.Token {
 	case '}':
 		tok = token.Token{token.RBRACE, string(l.ch)}
 	case 0:
-		tok = token.Token{ token.EOF, ""}
+		tok = token.Token{token.EOF, ""}
 
 	default:
 
@@ -177,7 +175,7 @@ func (l *Lexer) NextToken() token.Token {
 		} else if isDigit(l.ch) {
 			// it could be a number
 
-			t,l := l.readNumber()
+			t, l := l.readNumber()
 			tok.Type = t
 			tok.Literal = l
 			return tok
@@ -204,4 +202,3 @@ func (l *Lexer) skipWhitespace() {
 		l.readRune()
 	}
 }
-

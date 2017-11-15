@@ -1,8 +1,8 @@
 package ast
 
 import (
-	"goblin/token"
 	"goblin/tables"
+	"goblin/token"
 )
 
 type IntegerLiteral struct {
@@ -13,4 +13,4 @@ type IntegerLiteral struct {
 func (il *IntegerLiteral) expressionNode()      {}
 func (il *IntegerLiteral) TokenLiteral() string { return il.Token.Literal }
 func (il *IntegerLiteral) String() string       { return il.Token.Literal }
-func (il *IntegerLiteral) GetTypes() []uint16   { return []uint16{tables.INT}}
+func (il *IntegerLiteral) GetTypes() []uint16   { return []uint16{tables.INT} }

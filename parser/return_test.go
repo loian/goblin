@@ -1,9 +1,9 @@
 package parser
 
 import (
-	"testing"
-	"goblin/lexer"
 	"goblin/ast"
+	"goblin/lexer"
+	"testing"
 )
 
 func TestReturnStatements(t *testing.T) {

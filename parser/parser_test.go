@@ -1,12 +1,12 @@
 package parser
 
 import (
-	"testing"
-	"goblin/lexer"
-	"goblin/ast"
 	"fmt"
-	"goblin/tables"
 	"github.com/shopspring/decimal"
+	"goblin/ast"
+	"goblin/lexer"
+	"goblin/tables"
+	"testing"
 )
 
 //Tests a identifier expression is correctly parsed
@@ -79,11 +79,11 @@ func TestParsingIntNotAndMinusPrefixExpressions(t *testing.T) {
 	prefixTests := []struct {
 		input        string
 		operator     string
-		dtype []uint16
+		dtype        []uint16
 		integerValue int64
 	}{
-		{"!5;", "!",[]uint16{tables.INT}, 5},
-		{"-15;", "-", []uint16{tables.INT},15},
+		{"!5;", "!", []uint16{tables.INT}, 5},
+		{"-15;", "-", []uint16{tables.INT}, 15},
 	}
 
 	for _, tt := range prefixTests {
@@ -150,8 +150,6 @@ func TestBooleanLiteralExpression(t *testing.T) {
 	}
 }
 
-
-
 func testIntegerLiteral(t *testing.T, il ast.Expression, value int64) bool {
 	integ, ok := il.(*ast.IntegerLiteral)
 	if !ok {
@@ -174,22 +172,19 @@ func testIntegerLiteral(t *testing.T, il ast.Expression, value int64) bool {
 	return true
 }
 
-
-
-
 //Testing the ! and - operator when used as decimal prefixes
 func TestParsingDecimalNotAndMinusPrefixExpressions(t *testing.T) {
 	v1, _ := decimal.NewFromString("5.5")
 	v2, _ := decimal.NewFromString("15.45")
 
 	prefixTests := []struct {
-		input        string
-		operator     string
-		dtype []uint16
+		input    string
+		operator string
+		dtype    []uint16
 		decValue decimal.Decimal
 	}{
-		{"!5.5;", "!",[]uint16{tables.DECIMAL}, v1},
-		{"-15.45;", "-", []uint16{tables.DECIMAL},v2},
+		{"!5.5;", "!", []uint16{tables.DECIMAL}, v1},
+		{"-15.45;", "-", []uint16{tables.DECIMAL}, v2},
 	}
 
 	for _, tt := range prefixTests {
@@ -244,7 +239,6 @@ func testDecimalLiteral(t *testing.T, il ast.Expression, value decimal.Decimal) 
 
 	return true
 }
-
 
 // parser/parser_test.go
 
@@ -462,4 +456,113 @@ func testInfixExpression(t *testing.T, exp ast.Expression, left interface{},
 	}
 
 	return true
+}
+
+func TestIfExpression(t *testing.T) {
+	input := `if (x < y) { x }`
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program.Body does not contain %d statements. got=%d\n",
+			1, len(program.Statements))
+	}
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("program.Statements[0] is not ast.ExpressionStatement. got=%T",
+			program.Statements[0])
+	}
+
+	exp, ok := stmt.Expression.(*ast.IfExpression)
+	if !ok {
+		t.Fatalf("stmt.Expression is not ast.IfExpression. got=%T",
+			stmt.Expression)
+	}
+
+	if !testInfixExpression(t, exp.Condition, "x", "<", "y") {
+		return
+	}
+
+	if len(exp.Consequence.Statements) != 1 {
+		t.Errorf("consequence is not 1 statements. got=%d\n",
+			len(exp.Consequence.Statements))
+
+	}
+
+	consequence, ok := exp.Consequence.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("Statements[0] is not ast.ExpressionStatement. got=%T",
+			exp.Consequence.Statements[0])
+	}
+
+	if !testIdentifier(t, consequence.Expression, "x") {
+		return
+	}
+
+	if exp.Alternative != nil {
+		t.Errorf("exp.Alternative.Statements was not nil. got=%+v", exp.Alternative)
+	}
+}
+
+func TestIfElseExpression(t *testing.T) {
+	input := `if (x < y) { x } else { y }`
+
+	l := lexer.New(input)
+	p := New(l)
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program.Body does not contain %d statements. got=%d\n",
+			1, len(program.Statements))
+	}
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("program.Statements[0] is not ast.ExpressionStatement. got=%T",
+			program.Statements[0])
+	}
+
+	exp, ok := stmt.Expression.(*ast.IfExpression)
+	if !ok {
+		t.Fatalf("stmt.Expression is not ast.IfExpression. got=%T", stmt.Expression)
+	}
+
+	if !testInfixExpression(t, exp.Condition, "x", "<", "y") {
+		return
+	}
+
+	if len(exp.Consequence.Statements) != 1 {
+		t.Errorf("consequence is not 1 statements. got=%d\n",
+			len(exp.Consequence.Statements))
+	}
+
+	consequence, ok := exp.Consequence.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("Statements[0] is not ast.ExpressionStatement. got=%T",
+			exp.Consequence.Statements[0])
+	}
+
+	if !testIdentifier(t, consequence.Expression, "x") {
+		return
+	}
+
+	if len(exp.Alternative.Statements) != 1 {
+		t.Errorf("exp.Alternative.Statements does not contain 1 statements. got=%d\n",
+			len(exp.Alternative.Statements))
+	}
+
+	alternative, ok := exp.Alternative.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("Statements[0] is not ast.ExpressionStatement. got=%T",
+			exp.Alternative.Statements[0])
+	}
+
+	if !testIdentifier(t, alternative.Expression, "y") {
+		return
+	}
 }

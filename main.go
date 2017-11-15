@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"goblin/console"
+	"os"
 )
 
 func main() {

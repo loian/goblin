@@ -22,16 +22,16 @@ var typenames = map[string]TokenType{
 }
 
 var tokenNames = map[TokenType]string{
-	ILLEGAL:        "ILLEGAL",
-	EOF:            "EOF",
-	IDENT:          "IDENT",
-	TYPENAME:       "TYPENAME",
-	BOOL:           "BOOL",
-	INT:            "INT",
-	DECIMAL:        "DECIMAL",
-	STRING:         "STRING",
-	NULL:           "NULL",
-	ALL:            "ALL",
+	ILLEGAL:  "ILLEGAL",
+	EOF:      "EOF",
+	IDENT:    "IDENT",
+	TYPENAME: "TYPENAME",
+	BOOL:     "BOOL",
+	INT:      "INT",
+	DECIMAL:  "DECIMAL",
+	STRING:   "STRING",
+	NULL:     "NULL",
+	ALL:      "ALL",
 
 	ASSIGN:         "ASSIGN",
 	ASSIGNPLUS:     "ASSIGNPLUS",

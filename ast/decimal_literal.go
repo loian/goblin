@@ -5,7 +5,6 @@ import (
 	"goblin/token"
 
 	"github.com/shopspring/decimal"
-
 )
 
 type DecimalLiteral struct {
@@ -16,5 +15,4 @@ type DecimalLiteral struct {
 func (il *DecimalLiteral) expressionNode()      {}
 func (il *DecimalLiteral) TokenLiteral() string { return il.Token.Literal }
 func (il *DecimalLiteral) String() string       { return il.Token.Literal }
-func (il *DecimalLiteral) GetTypes() []uint16   { return []uint16{tables.DECIMAL}}
-
+func (il *DecimalLiteral) GetTypes() []uint16   { return []uint16{tables.DECIMAL} }

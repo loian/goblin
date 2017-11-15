@@ -6,8 +6,6 @@ import (
 	"goblin/token"
 )
 
-
-
 func TestNextToken(t *testing.T) {
 	input := `
 		var word string;
@@ -17,7 +15,6 @@ func TestNextToken(t *testing.T) {
 		let myFunc = fn(param string) string, int {};
 		a == 3
 	`
-
 
 	tests := []struct {
 		expectedType    token.TokenType
@@ -31,7 +28,7 @@ func TestNextToken(t *testing.T) {
 		{token.LET, "let"},
 		{token.IDENT, "number"},
 		{token.ASSIGN, "="},
-		{token.FLOAT, "34.1"},
+		{token.DECIMAL, "34.1"},
 		{token.SEMICOLON, ";"},
 
 		{token.LET, "let"},
@@ -65,7 +62,6 @@ func TestNextToken(t *testing.T) {
 		{token.IDENT, "a"},
 		{token.EQUAL, "=="},
 		{token.INT, "3"},
-
 	}
 
 	l := New(input)

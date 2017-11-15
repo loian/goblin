@@ -1,8 +1,8 @@
 package ast
 
 import (
-	"goblin/token"
 	"bytes"
+	"goblin/token"
 )
 
 type ReturnStatement struct {
@@ -12,7 +12,7 @@ type ReturnStatement struct {
 
 func (rs *ReturnStatement) statementNode()       {}
 func (rs *ReturnStatement) TokenLiteral() string { return rs.Token.Literal }
-func (rs *ReturnStatement) GetTypes() []uint16 {return rs.ReturnValue.GetTypes()}
+func (rs *ReturnStatement) GetTypes() []uint16   { return rs.ReturnValue.GetTypes() }
 func (rs *ReturnStatement) String() string {
 	var out bytes.Buffer
 
@@ -26,4 +26,3 @@ func (rs *ReturnStatement) String() string {
 
 	return out.String()
 }
-

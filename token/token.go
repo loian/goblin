@@ -11,9 +11,9 @@ const (
 	TYPENAME
 )
 
-const(
+const (
 	//BASIC TYPES
-	BOOL  = iota + 200
+	BOOL = iota + 200
 	INT
 	DECIMAL
 	STRING
@@ -21,9 +21,9 @@ const(
 	ALL
 )
 
-const(
+const (
 	// ASSIGNMENT
-	ASSIGN         = iota + 300
+	ASSIGN = iota + 300
 	ASSIGNPLUS
 	ASSINGMINUS
 	ASSIGNMULTIPLY
@@ -32,7 +32,7 @@ const(
 
 const (
 	//OPERATORS
-	PLUS         = iota + 400
+	PLUS = iota + 400
 	MINUS
 	MULTIPLY
 	DIVIDE
@@ -48,7 +48,7 @@ const (
 
 const (
 	// Delimiters
-	COMMA     = iota + 500
+	COMMA = iota + 500
 	SEMICOLON
 	LPAREN
 	RPAREN
@@ -60,7 +60,7 @@ const (
 
 const (
 	// Keywords
-	CONST     = iota + 600
+	CONST = iota + 600
 	ELSE
 	FALSE
 	FUNCTION
@@ -69,7 +69,6 @@ const (
 	RETURN
 	TRUE
 	VAR
-
 )
 
 //Defines the type of the tokens
@@ -80,4 +79,3 @@ type Token struct {
 	Type    TokenType
 	Literal string
 }
-

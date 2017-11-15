@@ -54,3 +54,19 @@ interface Charlie {
 let x = Mock(Jack);
 x.attach('kessler', fn() int,int  {});
 ```
+
+
+class X () {
+    pippo() ;
+    pluto () int;
+}
+
+interface IX {
+    pippo();
+    pluto () int;
+}
+
+class K () {
+    pippo() ;
+    pluto () int;
+}

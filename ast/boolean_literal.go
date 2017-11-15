@@ -1,8 +1,8 @@
 package ast
 
 import (
-	"goblin/token"
 	"goblin/tables"
+	"goblin/token"
 )
 
 type BooleanLiteral struct {
@@ -13,4 +13,4 @@ type BooleanLiteral struct {
 func (bl *BooleanLiteral) expressionNode()      {}
 func (bl *BooleanLiteral) TokenLiteral() string { return bl.Token.Literal }
 func (bl *BooleanLiteral) String() string       { return bl.Token.Literal }
-func (bl *BooleanLiteral) GetTypes() []uint16   { return []uint16{tables.BOOL}}
+func (bl *BooleanLiteral) GetTypes() []uint16   { return []uint16{tables.BOOL} }

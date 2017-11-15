@@ -1,9 +1,9 @@
 package parser
 
 import (
-	"testing"
-	"goblin/lexer"
 	"goblin/ast"
+	"goblin/lexer"
+	"testing"
 )
 
 // let identifier [type] = expression;
@@ -70,7 +70,6 @@ func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
 	return true
 }
 
-
 func checkParserErrors(t *testing.T, p *Parser) {
 	errors := p.Errors
 	if len(errors) == 0 {
@@ -83,5 +82,3 @@ func checkParserErrors(t *testing.T, p *Parser) {
 	}
 	t.FailNow()
 }
-
-

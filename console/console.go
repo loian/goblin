@@ -3,9 +3,9 @@ package console
 import (
 	"bufio"
 	"fmt"
-	"io"
 	"goblin/lexer"
 	"goblin/token"
+	"io"
 )
 
 const PROMPT = ">> "

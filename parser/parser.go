@@ -1,44 +1,44 @@
 package parser
 
 import (
-	"goblin/lexer"
-	"goblin/token"
-	"goblin/ast"
 	"fmt"
-	"goblin/tables"
-	"strconv"
 	"github.com/shopspring/decimal"
+	"goblin/ast"
+	"goblin/lexer"
+	"goblin/tables"
+	"goblin/token"
+	"strconv"
 )
 
 //define operators precedence
 const (
-	_ int = iota
+	_           = iota
 	LOWEST
-	EQUALS      // ==
-	LESSGREATER // > or <
-	SUM         // +
-	PRODUCT     // *
-	PREFIX      // -X or !X
-	SUFFIX		// X
-	CALL        // myFunction(X)
+	EQUALS            // ==
+	LESSGREATER  // > or <
+	SUM                  // +
+	PRODUCT          // *
+	PREFIX            // -X or !X
+	SUFFIX            // X
+	CALL                // myFunction(X)
 )
 
 var precedences = map[token.TokenType]int{
-	token.EQUAL:       EQUALS,
-	token.NOTEQUAL:   EQUALS,
+	token.EQUAL:        EQUALS,
+	token.NOTEQUAL:     EQUALS,
 	token.LESSER:       LESSGREATER,
 	token.LESSEREQUAL:  LESSGREATER,
-	token.GREATER: LESSGREATER,
+	token.GREATER:      LESSGREATER,
 	token.GREATEREQUAL: LESSGREATER,
-	token.PLUS:     SUM,
-	token.MINUS:    SUM,
-	token.DIVIDE:    PRODUCT,
-	token.MULTIPLY: PRODUCT,
+	token.PLUS:         SUM,
+	token.MINUS:        SUM,
+	token.DIVIDE:       PRODUCT,
+	token.MULTIPLY:     PRODUCT,
 }
 
 type (
-	prefixParseFn func() ast.Expression
-	infixParseFn func(ast.Expression) ast.Expression
+	prefixParseFn  func() ast.Expression
+	infixParseFn   func(ast.Expression) ast.Expression
 	postfixParseFn func() ast.Expression
 )
 
@@ -59,6 +59,8 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.DECIMAL, p.parseDecimalLiteral)
 	p.registerPrefix(token.NOT, p.parseNotPrefixExpression)
 	p.registerPrefix(token.MINUS, p.parseMinusPrefixExpression)
+
+	//infix parsers
 	p.infixParseFns = make(map[token.TokenType]infixParseFn)
 	p.registerInfix(token.PLUS, p.parsePlusEqNoteqGtLsGeLeInfixExpression)
 	p.registerInfix(token.MINUS, p.parseMinDivMulInfixExpression)
@@ -71,7 +73,10 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.LESSEREQUAL, p.parsePlusEqNoteqGtLsGeLeInfixExpression)
 	p.registerInfix(token.LESSER, p.parsePlusEqNoteqGtLsGeLeInfixExpression)
 
+	//grouped expressions
 	p.registerPrefix(token.LPAREN, p.parseGroupedExpression)
+
+	p.registerPrefix(token.IF, p.parseIfExpression)
 
 	// Read two tokens, so curToken and peekToken are both set
 	p.nextToken()
@@ -88,8 +93,8 @@ type Parser struct {
 	curToken  token.Token
 	peekToken token.Token
 
-	prefixParseFns map[token.TokenType]prefixParseFn
-	infixParseFns  map[token.TokenType]infixParseFn
+	prefixParseFns  map[token.TokenType]prefixParseFn
+	infixParseFns   map[token.TokenType]infixParseFn
 	postfixParseFns map[token.TokenType]postfixParseFn
 }
 
@@ -110,6 +115,7 @@ func (p *Parser) registerInfix(tokenType token.TokenType, fn infixParseFn) {
 func (p *Parser) registerPostfix(tokenType token.TokenType, fn postfixParseFn) {
 	p.postfixParseFns[tokenType] = fn
 }
+
 //Get the next lexer token
 func (p *Parser) nextToken() {
 	p.curToken = p.peekToken
@@ -129,7 +135,7 @@ func (p *Parser) ParseProgram() *ast.Program {
 		p.nextToken()
 	}
 
-	lit, e := tables.LateTypeResolvingCheck();
+	lit, e := tables.LateTypeResolvingCheck()
 	if e != nil {
 		p.typeError(lit)
 	}
@@ -160,7 +166,7 @@ func (p *Parser) peekTokenIs(t token.TokenType) bool {
 	return p.peekToken.Type == t
 }
 
-//Assert function, it record an error if the expected type is not the wanted one
+//Consume the next token if it is of the wanted type
 func (p *Parser) expectPeek(t token.TokenType) bool {
 	if p.peekTokenIs(t) {
 		p.nextToken()
@@ -186,7 +192,7 @@ func (p *Parser) typeError(ident string) {
 
 //Record a type error
 func (p *Parser) dataTypeError(t uint16) {
-	tn,_:=tables.LookupTypeName(t)
+	tn, _ := tables.LookupTypeName(t)
 	msg := fmt.Sprintf("unexpected type %s", tn)
 	p.Errors = append(p.Errors, msg)
 }
@@ -212,7 +218,6 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 	return leftExp
 }
 
-
 //parseIdentifier parses (obviously) an identifier
 func (p *Parser) parseIdentifier() ast.Expression {
 	return &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
@@ -222,7 +227,6 @@ func (p *Parser) parseIdentifier() ast.Expression {
 func (p *Parser) parseBooleanLiteral() ast.Expression {
 	return &ast.BooleanLiteral{Token: p.curToken, Value: p.curTokenIs(token.TRUE)}
 }
-
 
 //parseIntegerLiteral, try to parse an int literal or it record
 func (p *Parser) parseIntegerLiteral() ast.Expression {
@@ -279,7 +283,7 @@ func (p *Parser) parseNotPrefixExpression() ast.Expression {
 	//Compares the type of the right expression (the one following the current parsed token)
 	//with the accepted type of the current expression (a !)
 	//if !p.checkTypeCompatibility(expression.GetTypes(), expression.Right.GetTypes()) {
-		//p.dataTypeError(expression.Right.GetTypes()[0])
+	//p.dataTypeError(expression.Right.GetTypes()[0])
 	//}
 
 	return expression
@@ -308,10 +312,10 @@ func (p *Parser) parseMinusPrefixExpression() ast.Expression {
 }
 
 //checkTypeCompatibility given two list of types identifiers, it checks if they have a common element
-func (p *Parser) checkTypeCompatibility(receiver []uint16, received []uint16) bool{
+func (p *Parser) checkTypeCompatibility(receiver []uint16, received []uint16) bool {
 	for x := range receiver {
-		for y:= range received {
-			if x==y {
+		for y := range received {
+			if x == y {
 				return true
 			}
 		}
@@ -335,13 +339,12 @@ func (p *Parser) curPrecedence() int {
 	return LOWEST
 }
 
-
 func (p *Parser) parsePlusEqNoteqGtLsGeLeInfixExpression(left ast.Expression) ast.Expression {
 	expression := &ast.InfixExpression{
 		Token:    p.curToken,
 		Operator: p.curToken.Literal,
 		Left:     left,
-		Types: []uint16{tables.INT, tables.DECIMAL, tables.STRING},
+		Types:    []uint16{tables.INT, tables.DECIMAL, tables.STRING},
 	}
 
 	precedence := p.curPrecedence()
@@ -357,7 +360,7 @@ func (p *Parser) parseMinDivMulInfixExpression(left ast.Expression) ast.Expressi
 		Token:    p.curToken,
 		Operator: p.curToken.Literal,
 		Left:     left,
-		Types: []uint16{tables.INT, tables.DECIMAL, tables.STRING},
+		Types:    []uint16{tables.INT, tables.DECIMAL, tables.STRING},
 	}
 
 	precedence := p.curPrecedence()
@@ -378,4 +381,54 @@ func (p *Parser) parseGroupedExpression() ast.Expression {
 	}
 
 	return exp
+}
+
+func (p *Parser) parseIfExpression() ast.Expression {
+	expression := &ast.IfExpression{Token: p.curToken}
+
+	if !p.expectPeek(token.LPAREN) {
+		return nil
+	}
+
+	p.nextToken()
+	expression.Condition = p.parseExpression(LOWEST)
+
+	if !p.expectPeek(token.RPAREN) {
+		return nil
+	}
+
+	if !p.expectPeek(token.LBRACE) {
+		return nil
+	}
+
+	expression.Consequence = p.parseBlockStatement()
+
+	if p.peekTokenIs(token.ELSE) {
+		p.nextToken()
+
+		if !p.expectPeek(token.LBRACE) {
+			return nil
+		}
+
+		expression.Alternative = p.parseBlockStatement()
+	}
+
+	return expression
+}
+
+func (p *Parser) parseBlockStatement() *ast.BlockStatement {
+	block := &ast.BlockStatement{Token: p.curToken}
+	block.Statements = []ast.Statement{}
+
+	p.nextToken()
+
+	for !p.curTokenIs(token.RBRACE) && !p.curTokenIs(token.EOF) {
+		stmt := p.parseStatement()
+		if stmt != nil {
+			block.Statements = append(block.Statements, stmt)
+		}
+		p.nextToken()
+	}
+
+	return block
 }

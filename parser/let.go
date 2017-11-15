@@ -1,10 +1,9 @@
 package parser
 
 import (
-	"goblin/token"
 	"goblin/ast"
 	"goblin/tables"
-
+	"goblin/token"
 )
 
 //Parse a let
@@ -27,7 +26,7 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 		}
 
 		//The given identifier points to a type, so we can declare the let as accepting only that specific type
-		stmt.Types = append(stmt.Types,t)
+		stmt.Types = append(stmt.Types, t)
 		//and then move to the next token
 		p.nextToken()
 	}

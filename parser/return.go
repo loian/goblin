@@ -1,8 +1,8 @@
 package parser
 
 import (
-	"goblin/token"
 	"goblin/ast"
+	"goblin/token"
 )
 
 func (p *Parser) parseReturnStatement() *ast.ReturnStatement {

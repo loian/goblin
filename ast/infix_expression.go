@@ -12,12 +12,12 @@ type InfixExpression struct {
 	Left     Expression
 	Operator string
 	Right    Expression
-	Types  []uint16
+	Types    []uint16
 }
 
 func (oe *InfixExpression) expressionNode()      {}
 func (oe *InfixExpression) TokenLiteral() string { return oe.Token.Literal }
-func (oe *InfixExpression) GetTypes() []uint16{ return oe.Types}
+func (oe *InfixExpression) GetTypes() []uint16   { return oe.Types }
 func (oe *InfixExpression) String() string {
 	var out bytes.Buffer
 
@@ -29,4 +29,3 @@ func (oe *InfixExpression) String() string {
 
 	return out.String()
 }
-
