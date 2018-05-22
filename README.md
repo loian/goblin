@@ -28,7 +28,7 @@ fn gecko (stringArr []string) int, string {
 }
 
 //launch concurrent procedures and defer the assignment to the capture statement
-defer a,b = parallel fn () int, string {
+defer a,b = fn () int, string {
 		return 3, 'ping';
 	}();
 
